@@ -1,13 +1,16 @@
-def update_data(data, list, index=0, length=0):
-    if length != 0:
-        for i in range(length):
-            list[i] = 
-    else:
-        list[index] = data
+a = b'AC01'
+b = b'10F4'
 
-inputdata = 123
+a = 0x80
+# b = 0x0D
 
-arr = [0, 0, 0, 0, 0, 0, 0, 0]
+# a = b'\x3C'
+print(type(a))
+print(a)
 
-update_data(inputdata, arr, 8)
-print(arr)
+# print(type(a))
+# print(type(b))
+
+# print(a&b)
+# print(a|b)
+# print(a << 2)
