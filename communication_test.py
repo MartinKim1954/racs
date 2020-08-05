@@ -5,6 +5,7 @@ PORT = 20002
 socket = server_socket_open(PORT)
 txData = b"33b0a"
 
+
 try:
     server_socket_state(socket)
     tp_popup("TCP/IP has opened.")

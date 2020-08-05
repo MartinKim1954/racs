@@ -10,7 +10,7 @@ first_thread = thread_run(updating, loop=True)
 
 def updating():
     robot_communication.get_PTOR_data()
-    robot_communication.decode_and_split()
+    robot_communication.split_data()
     robot_communication.communication_check()
     robot_communication.command_check()   # Done without udpates from 'Operation'
     robot_communication.position_check()  # Done without udpates from 'Operation'

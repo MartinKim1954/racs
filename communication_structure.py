@@ -6,19 +6,20 @@ class Communication(Setting):
         _, self.raw_data = server_socket_read(self.plc_socket, length=-1, timeout=2)
         self.comm_state = server_socket_state(self.plc_socket)
 
-    def decode_and_split(self):
+    def split_data(self):
         for i in range(len(self.PTOR_data)):
             j = i*2
-            self.PTOR_data[i] = self.raw_data.decode()[j:(j+2)]
+            self.PTOR_data[i] = self.raw_data[j:(j+2)]
+            self.PTOR_data[i] = int(self.PTOR_data[i], 16)
 
     def communication_check(self):
-        if self.PTOR_data[0] == '00':
+        if self.PTOR_data[0] == self.PTOR_dic['comm_connected']:
             if self.comm_state == False:
-                self.RTOP_data[0] == '00'
+                self.RTOP_data[0] = '00'
                 print("Communication Unsuccessful!")
         elif self.PTOR_data[0] == '10':
             if self.comm_state == True:
-                self.RTOP_data[0] == '10'
+                self.RTOP_data[0] = '10'
                 print("Communication Successful!")
         else:
             print(f"Error Communication: {self.PTOR_data[0]}")

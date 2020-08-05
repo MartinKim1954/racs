@@ -1,16 +1,19 @@
-a = b'AC01'
-b = b'10F4'
+raw_data = b'6519816517811619'
 
-a = 0x80
-# b = 0x0D
+PTOR_data = [0x00 for _ in range(8)]
 
-# a = b'\x3C'
-print(type(a))
-print(a)
+print(raw_data)
 
-# print(type(a))
-# print(type(b))
 
-# print(a&b)
-# print(a|b)
-# print(a << 2)
+def decode_and_split():
+    for i in range(len(PTOR_data)):
+        j = i*2
+        PTOR_data[i] = raw_data[j:(j+2)]
+        PTOR_data[i] = int(PTOR_data[i], 16)
+
+decode_and_split()
+
+print(PTOR_data)
+
+def check_whether(data, ):
+    
