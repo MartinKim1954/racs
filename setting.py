@@ -5,8 +5,8 @@ class Setting:
     home_position = [0, 0, 0, 0, 0, 0]
     wait_position = [0, 0, 0, 0, 0, 0]
     # Data setting
-    PTOR_data = [0x00 for _ in range(10)]
-    RTOP_data = [0x00 for _ in range(10)]
+    PTOR_data = [0x00 for _ in range(8)]
+    RTOP_data = [0x00 for _ in range(8)]
     ''' Basic Assigments '''
     PTOR_dic = {
         'comm_connected': 0x01, 'connect_vision': 0x02, 'clamp': 0x04, 'emergency_pushed': 0x80,

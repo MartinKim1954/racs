@@ -6,7 +6,7 @@ class Communication(Setting):
         _, self.raw_data = server_socket_read(self.plc_socket, length=-1, timeout=2)
         self.comm_state = server_socket_state(self.plc_socket)
 
-    def split_data(self):
+    def split_and_decode(self):
         for i in range(len(self.PTOR_data)):
             j = i*2
             self.PTOR_data[i] = self.raw_data[j:(j+2)]
@@ -88,7 +88,7 @@ class Communication(Setting):
         else:
             print("Fail to communicate with PLC!")
 
-    def merge_and_encode(self):
+    def merge_and_decode(self):
         self.encodedRTOP_data = ""
         for i in range(len(self.RTOP_data)):
             self.encodedRTOP_data += self.RTOP_data[i]
