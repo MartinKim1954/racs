@@ -6,19 +6,23 @@ from setting import *
 robot_communication = Communication()
 robot_operation = Operation()
 
+# 1st - COMMUNICATION
 first_thread = thread_run(updating, loop=True)
+# 2nd - EMERGENCY CHECK
+second_thread = thread_run(robot_communication.emergency_pushed_check, loop=True)
 
 def updating():
     robot_communication.get_PTOR_data()
     robot_communication.split_and_decode()
     robot_communication.communication_check()
-    robot_communication.command_check()   # Done without udpates from 'Operation'
+    robot_communication.vision_check()
+    robot_communication.IO_check()
     robot_communication.position_check()  # Done without udpates from 'Operation'
-    robot_communication.IO_status_check()
-    # robot_communication.charging_type() # 이건 어떡할건지.... 로봇이 무슨 타입인지 그 전 프로세스가 없으면 확인할 수가 없음. 근데 어떤 플로우로 확인할건지?
-    robot_communication.emergency_pushed_check()
-    robot_communication.merge_and_decode()
+    robot_communication.command_check()   # Done without udpates from 'Operation'
+    robot_communication.charging_type_check() # Done without udpates from 'Operation'
+    robot_communication.encode_and_merge()
     robot_communication.send_RTOP_data()
+    robot_communication.reset_data()
 
 # 로봇 동작 관련
 while True:
