@@ -9,7 +9,7 @@ robot_operation = Operation()
 # 1st - COMMUNICATION
 first_thread = thread_run(updating, loop=True)
 # 2nd - EMERGENCY CHECK
-second_thread = thread_run(robot_communication.emergency_pushed_check, loop=True)
+second_thread = thread_run(robot_communication.emergency_check, loop=True)
 
 def updating():
     robot_communication.get_PTOR_data()

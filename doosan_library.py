@@ -17,6 +17,9 @@ def server_socket_write(a, b):
 def server_socket_state(a):
     return a
 
+def server_socket_close(a):
+    return a
+
 def get_current_posx(ref=-1):
     a = 1
     b = 2
@@ -35,4 +38,7 @@ def get_tool_digital_input(a):
     return a
 
 def stop(a):
+    pass
+
+def movel(a, time=5):
     pass

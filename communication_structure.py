@@ -58,7 +58,7 @@ class Communication(Setting):
         if self.PTOR_data[0] & self.PTOR_dic['emergency_pushed']:
             stop(DR_HOLD)
             print("Emergency Pushed!")
-            server_socket_close(plc_socket) # Cut the communication
+            server_socket_close(self.plc_socket) # Cut the communication
 
     def position_check(self):
         if self.comm_state:
@@ -78,16 +78,16 @@ class Communication(Setting):
     def command_check(self):
         if self.comm_state:
             if self.PTOR_data[3] & self.PTOR_dic['wait']:
-                self.RTOP_data[3] | self.RTOP_dic['wait_confirmed']
+                self.RTOP_data[3] = self.RTOP_data[3] | self.RTOP_dic['wait_confirmed']
                 # send the signal first, then act a little later.
             elif self.PTOR_data[3] & self.PTOR_dic['start_charging']:
-                self.RTOP_data[3] | self.RTOP_dic['start_charging_confirmed']
+                self.RTOP_data[3] = self.RTOP_data[3] | self.RTOP_dic['start_charging_confirmed']
                 # send the signal first, then act a little later.
             elif self.PTOR_data[3] & self.PTOR_dic['finish_charging']:
-                self.RTOP_data[3] | self.RTOP_dic['finish_charging_confirmed']
+                self.RTOP_data[3] = self.RTOP_data[3] | self.RTOP_dic['finish_charging_confirmed']
                 # send the signal first, then act a little later.
             elif self.PTOR_data[3] & self.PTOR_dic['recover']:
-                self.RTOP_data[3] | self.RTOP_dic['recover_confirmed']
+                self.RTOP_data[3] = self.RTOP_data[3] | self.RTOP_dic['recover_confirmed']
                 # send the signal first, then act a little later.
             else:
                 print(f"Error Command: {self.PTOR_data[1]}")
@@ -97,23 +97,22 @@ class Communication(Setting):
     def charging_type_check(self):
         if self.comm_state:
             if self.PTOR_data[5] & self.PTOR_dic['grasp_combo']:
-                self.RTOP_data[5] | self.RTOP_dic['grasp_combo_confirmed']
+                self.RTOP_data[5] = self.RTOP_data[5] | self.RTOP_dic['grasp_combo_confirmed']
                 # send the signal first, then act a little later.
             elif self.PTOR_data[5] & self.PTOR_dic['grasp_chademo']:
-                self.RTOP_data[5] | self.RTOP_dic['grasp_chademo_confirmed']
+                self.RTOP_data[5] = self.RTOP_data[5] | self.RTOP_dic['grasp_chademo_confirmed']
                 # send the signal first, then act a little later.
             elif self.PTOR_data[5] & self.PTOR_dic['release_combo']:
-                self.RTOP_data[5] | self.RTOP_dic['release_combo_confiremd']
+                self.RTOP_data[5] = self.RTOP_data[5] | self.RTOP_dic['release_combo_confiremd']
                 # send the signal first, then act a little later.
             elif self.PTOR_data[5] & self.PTOR_dic['release_chademo']:
-                self.RTOP_data[5] | self.RTOP_dic['release_chademo_confirmed']
+                self.RTOP_data[5] = self.RTOP_data[5] | self.RTOP_dic['release_chademo_confirmed']
                 # send the signal first, then act a little later.
         else:
             print("Communication Unsuccessful!")
 
     def encode_and_merge(self):
         self.encodedRTOP_data = b''
-
         for i in range(len(self.PTOR_data)):
             self.PTOR_data[i] = str(hex(self.PTOR_data[i]))
             self.PTOR_data[i] = self.PTOR_data[i][2:].encode()
