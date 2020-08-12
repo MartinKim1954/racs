@@ -18,6 +18,7 @@ class Operation(Communication):
 
     def do_wait(self):
         if self.PTOR_data[3] & self.PTOR_dic['wait']:
+            pass
         if self.wait == True:
             self.RTOP_data[3] & self.RTOP_dic['waiting']
 
@@ -25,27 +26,34 @@ class Operation(Communication):
         if self.start == True:
             self.do_grasp_combo()
             self.do_grasp_chademo()
-            sub_program_run("starting")
 
     def do_finish_charging(self):
-        sub_program_run("finishing")
+        pass
 
     def do_recover(self):
-        sub_program_run("recover")
+        pass
 
     def do_grasp_combo(self):
-        if self.combo_state = True:
-            sub_program_run("grasp_combo")
+        if self.combo_state == True:
+            # 영민 will teach the robot and its position will be passed by Global_variables.
+            # With passed data, movel(~~~) / set(~~~) will be written and run.
             self.RTOP_data[5] = self.RTOP_data[5] & ~self.RTOP_dic['chademo_grasped']
             self.RTOP_data[5] = self.RTOP_data[5] | self.RTOP_dic['combo_grasped']
-            sub_program_run("combo_test")
+            # Gun connection test will be done with vision data calculated by me.
         
     def do_grasp_chademo(self):
-        if self.chademo_state = True:
-            sub_program_run("grasp_chademo")
+        if self.chademo_state == True:
+            # 영민 will teach the robot and its position will be passed by Global_variables.
+            # With passed data, movel(~~~) / set(~~~) will be written and run.            
             self.RTOP_data[5] = self.RTOP_data[5] & ~self.RTOP_dic['combo_grasped']
             self.RTOP_data[5] = self.RTOP_data[5] | self.RTOP_dic['chademo_grasped']
-            sub_program_run("chademo_test")
+            # Gun connection test will be done with vision data calculated by me.
+
+    def do_release_combo(self):
+        pass
+
+    def do_release_chademo(self):
+        pass
 
 
     
