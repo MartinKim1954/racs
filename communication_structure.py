@@ -20,6 +20,7 @@ class Communication(Setting):
         else:
             self.comm_state = False
             print("Communication Unsuccessful!")
+            self.RTOP_data[0] = self.RTOP_data[0] & ~self.RTOP_dic['comm_connected']
             
     def vision_check(self):
         if self.comm_state:
@@ -30,6 +31,7 @@ class Communication(Setting):
             else:
                 self.vis_state = False
                 print("Vision Connection Unsuccessful!")
+                self.RTOP_data[0] = self.RTOP_data[0] & ~self.RTOP_dic['vision_connected']
         else:
             print("Communication Unsuccessful!")
 
@@ -39,75 +41,87 @@ class Communication(Setting):
             self.pushing_tool_state = get_tool_digital_input(2)
             if (self.PTOR_data[0] & self.PTOR_dic['clamp']) or (self.clamping_tool_state):
                 set_tool_digital_output(1, ON)
+                self.clamp_state = True
                 print("Clamped!")
                 self.RTOP_data[0] = self.RTOP_data[0] | self.RTOP_dic['clamped']
             else:
                 set_tool_digital_output(1, OFF)
                 print("Unclamped!")
+                self.clamp_state = False
+                self.RTOP_data[0] = self.RTOP_data[0] & ~self.RTOP_dic['clamped']
+
             if (self.PTOR_data[0] & self.PTOR_dic['pushed']) or (self.pushing_tool_state):
                 set_tool_digital_output(2, ON)
+                self.btn_state = True
                 print("Pushed!")
                 self.RTOP_data[0] = self.RTOP_data[0] | self.RTOP_dic['pushed']
             else:
                 set_tool_digital_output(2, OFF)
+                self.btn_state = False
                 print("Unpushed!")
+                self.RTOP_data[0] = self.RTOP_data[0] & ~self.RTOP_dic['pushed']
         else:
             print("Communication Unsuccessful!")
 
     def emergency_check(self):
         if self.PTOR_data[0] & self.PTOR_dic['emergency_pushed']:
-            stop(DR_HOLD)
             print("Emergency Pushed!")
-            server_socket_close(self.plc_socket) # Cut the communication
+            server_socket_close(self.plc_socket)
+            exit()
 
     def position_check(self):
         if self.comm_state:
             self._current_position, _ = get_current_posx(ref=DR_BASE)
-            if self._current_position == posx(self.home_position):
-                self.RTOP_data[1] = self.RTOP_data[1] | self.RTOP_dic['home_positioned']
-            elif self._current_position == posx(self.wait_position):
-                self.RTOP_data[1] = self.RTOP_data[1] | self.RTOP_dic['wait_positioned']
+            if self.PTOR_data[1] & self.PTOR_dic['go_to_home_position']:
+                self.home_positioned = True
+                if self._current_position == posx(self.HOME_POSITION):
+                    self.RTOP_data[1] = self.RTOP_data[1] & ~self.RTOP_dic['wait_positioned']
+                    self.RTOP_data[1] = self.RTOP_data[1] | self.RTOP_dic['home_positioned']
             else:
-                if self.PTOR_data[1] & self.PTOR_dic['go_to_home_position']:
-                    self.RTOP_data[1] = self.RTOP_data[1] | self.RTOP_dic['go_to_home_position_confirmed']
-                elif self.PTOR_data[1] & self.PTOR_dic['go_to_wait_position']:
-                    self.RTOP_data[1] = self.RTOP_data[1] | self.RTOP_dic['go_to_wait_position_confirmed']
+                # RTOP_data will be handled in 'operation_structure'
+                self.home_positioned = False
+            if self.PTOR_data[1] & self.PTOR_dic['go_to_wait_position']:
+                self.wait_positioned = True
+                if self._current_position == posx(self.WAIT_POSITION):
+                    self.RTOP_data[1] = self.RTOP_data[1] & ~self.RTOP_dic['home_positioned']
+                    self.RTOP_data[1] = self.RTOP_data[1] | self.RTOP_dic['wait_positioned']
+            else:
+                # RTOP_data will be handled in 'operation_structure'
+                self.wait_positioned = False
         else:
             print("Communication Unsuccessful!")
 
     def command_check(self):
         if self.comm_state:
             if self.PTOR_data[3] & self.PTOR_dic['wait']:
-                self.RTOP_data[3] = self.RTOP_data[3] | self.RTOP_dic['wait_confirmed']
-                # send the signal first, then act a little later.
-            elif self.PTOR_data[3] & self.PTOR_dic['start_charging']:
-                self.RTOP_data[3] = self.RTOP_data[3] | self.RTOP_dic['start_charging_confirmed']
-                # send the signal first, then act a little later.
-            elif self.PTOR_data[3] & self.PTOR_dic['finish_charging']:
-                self.RTOP_data[3] = self.RTOP_data[3] | self.RTOP_dic['finish_charging_confirmed']
-                # send the signal first, then act a little later.
-            elif self.PTOR_data[3] & self.PTOR_dic['recover']:
-                self.RTOP_data[3] = self.RTOP_data[3] | self.RTOP_dic['recover_confirmed']
-                # send the signal first, then act a little later.
+                self.wait = True
             else:
-                print(f"Error Command: {self.PTOR_data[1]}")
+                self.wait = False
+            if self.PTOR_data[3] & self.PTOR_dic['start_charging']:
+                self.start = True
+            else:
+                self.start = False
+            if self.PTOR_data[3] & self.PTOR_dic['finish_charging']:
+                self.finish = True
+            else:
+                self.finish = False
+            if self.PTOR_data[3] & self.PTOR_dic['recover']:
+                self.recover = True
+            else:
+                self.recover = False
         else:
             print("Communication Unsuccessful!")
 
     def charging_type_check(self):
         if self.comm_state:
             if self.PTOR_data[5] & self.PTOR_dic['grasp_combo']:
-                self.RTOP_data[5] = self.RTOP_data[5] | self.RTOP_dic['grasp_combo_confirmed']
-                # send the signal first, then act a little later.
-            elif self.PTOR_data[5] & self.PTOR_dic['grasp_chademo']:
-                self.RTOP_data[5] = self.RTOP_data[5] | self.RTOP_dic['grasp_chademo_confirmed']
-                # send the signal first, then act a little later.
-            elif self.PTOR_data[5] & self.PTOR_dic['release_combo']:
-                self.RTOP_data[5] = self.RTOP_data[5] | self.RTOP_dic['release_combo_confiremd']
-                # send the signal first, then act a little later.
-            elif self.PTOR_data[5] & self.PTOR_dic['release_chademo']:
-                self.RTOP_data[5] = self.RTOP_data[5] | self.RTOP_dic['release_chademo_confirmed']
-                # send the signal first, then act a little later.
+                self.combo_state = True
+            else:
+                self.combo_state = False
+            if self.PTOR_data[5] & self.PTOR_dic['grasp_chademo']:
+                self.chademo_state = True
+            else:
+                self.chademo_state = False
         else:
             print("Communication Unsuccessful!")
 
@@ -120,8 +134,6 @@ class Communication(Setting):
 
     def send_RTOP_data(self):
         server_socket_write(self.plc_socket, self.encodedRTOP_data)
-        if self.RTOP_data[9] == '99':
-            stop(DR_HOLD)   # After sending data, it stops
 
     def reset_data(self):
         self.RTOP_data = [0 for _ in range(8)]

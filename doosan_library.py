@@ -42,3 +42,9 @@ def stop(a):
 
 def movel(a, time=5):
     pass
+
+def sub_program_run(a):
+    pass
+
+def exit():
+    pass

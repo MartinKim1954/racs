@@ -1,23 +1,16 @@
-class A:
-    def a(self):
-        self.a = 1
-        print("I'm A.a")
+DEFAULT = 0
+x = 0x01
+y = 0x02
+z = 0x04
 
-class B(A):
-    def b(self):
-        self.b = 2
-        print("I'm B.b")
+DEFAULT_1 = DEFAULT | x | y | z
+print(DEFAULT_1)
 
-class C(B):
-    def c(self):
-        self.c = 3
-        print("I'm C.c")
+DEFAULT_1 = DEFAULT_1 & ~y
 
+print(DEFAULT_1)
 
-Z = C()
-Z.a()
-Z.b()
-Z.c()
-print(Z.a)
-print(Z.b)
-print(Z.c)
+if DEFAULT_1 & y:
+    print("y is there")
+else:
+    print("y is not there")
