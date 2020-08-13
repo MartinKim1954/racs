@@ -26,6 +26,8 @@ class Operation(Communication):
         if self.start == True:
             self.do_grasp_combo()
             self.do_grasp_chademo()
+            self.do_combo_test()
+            self.do_chademo_test()
 
     def do_finish_charging(self):
         pass
@@ -34,26 +36,67 @@ class Operation(Communication):
         pass
 
     def do_grasp_combo(self):
+        self.combo_grasped = False
         if self.combo_state == True:
             # 영민 will teach the robot and its position will be passed by Global_variables.
-            # With passed data, movel(~~~) / set(~~~) will be written and run.
+            movel(self.combo_grasping_pos1) # turn around from home position
+            movel(self.combo_grasping_pos2) # approach1
+            movel(self.combo_grasping_pos3) # approach2
+            movel(self.combo_grasping_pos4) # apporach3 right in front of gun
+            set_tool_digital_output(1, ON)  # unclamp
+            movel(self.combo_grasping_pos5) # approach4 to clamp
+            set_tool_digital_output(1, OFF) # clamp
+            set_tool(combo)   # tool weight adapted
+            self.unclamp_combo = True
+            wait(5)
+            if self.PTOR_data[0] | self.PTOR_dic['combo_holder_unclamped']:
+                movel(self.combo_grasping_pos6) # horizontally backing in 
+            else:
+                exit()
             self.RTOP_data[5] = self.RTOP_data[5] & ~self.RTOP_dic['chademo_grasped']
             self.RTOP_data[5] = self.RTOP_data[5] | self.RTOP_dic['combo_grasped']
-            # Gun connection test will be done with vision data calculated by me.
+            self.combo_grasped = True
         
     def do_grasp_chademo(self):
+        self.chademo_grasped = False
         if self.chademo_state == True:
             # 영민 will teach the robot and its position will be passed by Global_variables.
-            # With passed data, movel(~~~) / set(~~~) will be written and run.            
+            movel(self.chademo_grasping_pos1) # turn around from home position
+            movel(self.chademo_grasping_pos2) # approach1
+            movel(self.chademo_grasping_pos3) # approach2
+            movel(self.chademo_grasping_pos4) # apporach3 right in front of gun
+            set_tool_digital_output(1, ON)  # unclamp
+            movel(self.chademo_grasping_pos5) # approach4 to clamp
+            set_tool_digital_output(1, OFF) # clamp
+            set_tool(chademo)   # tool weight adapted
+            self.unclamp_chademo = True
+            wait(5)
+            if self.PTOR_data[0] | self.PTOR_dic['chademo_holder_unclamped']:
+                movel(self.chademo_grasping_pos6) # horizontally backing in 
+            else:
+                exit()
             self.RTOP_data[5] = self.RTOP_data[5] & ~self.RTOP_dic['combo_grasped']
             self.RTOP_data[5] = self.RTOP_data[5] | self.RTOP_dic['chademo_grasped']
-            # Gun connection test will be done with vision data calculated by me.
+            self.chademo_grasped = True
+
+    def do_combo_test(self):
+        self.combo_test_completed = False
+        if self.combo_grasped == True:
+            movel(self.combo_test_pos1)
+            movel(self.combo_test_pos2)
+
+            pass
+
+    def do_chademo_test(self):
+        self.chademo_test_completed = False
+        if self.chademo_grasped == True:
+            pass
 
     def do_release_combo(self):
-        pass
+        set_tool(normal)
 
     def do_release_chademo(self):
-        pass
+        set_tool(normal)
 
 
     

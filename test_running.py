@@ -17,12 +17,15 @@ def updating():
     robot_communication.communication_check()
     robot_communication.vision_check()
     robot_communication.IO_check()
+    robot_communication.holder_check()
     robot_communication.position_check()  # Done without udpates from 'Operation'
     robot_communication.command_check()   # Done without udpates from 'Operation'
     robot_communication.charging_type_check() # Done without udpates from 'Operation'
     robot_communication.encode_and_merge()
     robot_communication.send_RTOP_data()
     robot_communication.reset_data()
+
+set_tool(normal)
 
 # 로봇 동작 관련
 while True:

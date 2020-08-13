@@ -63,6 +63,22 @@ class Communication(Setting):
         else:
             print("Communication Unsuccessful!")
 
+    def holder_check(self):
+        # COMBO
+        if self.unclamp_combo == True:
+            self.RTOP_data[0] = self.RTOP_data[0] & ~self.RTOP_dic['unclamp_chademo_holder']
+            self.RTOP_data[0] = self.RTOP_data[0] | self.RTOP_dic['unclamp_combo_holder']
+            print("Unclamp Combo Holder!")
+        else:
+            self.unclamp_combo = False
+        # CHAdeMO
+        if self.unclamp_chademo == True:
+            self.RTOP_data[0] = self.RTOP_data[0] & ~self.RTOP_dic['unclamp_combo_holder']
+            self.RTOP_data[0] = self.RTOP_data[0] | self.RTOP_dic['unclamp_chademo_holder']
+            print("Unclamp CHAdeMO Holder!")
+        else:
+            self.unclamp_chademo = False
+
     def emergency_check(self):
         if self.PTOR_data[0] & self.PTOR_dic['emergency_pushed']:
             print("Emergency Pushed!")

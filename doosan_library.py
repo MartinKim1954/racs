@@ -3,6 +3,34 @@ DR_BASE = 1
 DR_HOLD = 0
 ON = 1
 OFF = 0
+Global_g_combo1 = 0
+Global_g_combo2 = 0
+Global_g_combo3 = 0
+Global_g_combo4 = 0
+Global_g_combo5 = 0
+Global_g_combo6 = 0
+Global_g_chademo1 = 0
+Global_g_chademo2 = 0
+Global_g_chademo3 = 0
+Global_g_chademo4 = 0
+Global_g_chademo5 = 0
+Global_g_chademo6 = 0
+chademo = 0
+combo = 0
+normal = 0
+Global_t_combo1 = 0
+Global_t_combo2 = 0
+Global_t_combo3 = 0
+Global_t_combo4 = 0
+Global_t_combo5 = 0
+Global_t_combo6 = 0
+Global_t_chademo1 = 0
+Global_t_chademo2 = 0
+Global_t_chademo3 = 0
+Global_t_chademo4 = 0
+Global_t_chademo5 = 0
+Global_t_chademo6 = 0
+
 
 def server_socket_open(a):
     return a
@@ -47,4 +75,10 @@ def sub_program_run(a):
     pass
 
 def exit():
+    pass
+
+def set_tool(normal):
+    pass
+
+def wait(a):
     pass
