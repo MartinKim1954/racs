@@ -24,7 +24,7 @@ class Communication(Setting):
             
     def vision_check(self):
         if self.comm_state:
-            if self.PTOR_data[0] & self.PTOR_dic['vision_connected']:
+            if self.PTOR_data[0] & self.PTOR_dic['connect_vision']:
                 self.vis_state = True
                 print("Vision Connection Successful!")
                 self.RTOP_data[0] = self.RTOP_data[0] | self.RTOP_dic['vision_connected']
@@ -37,47 +37,53 @@ class Communication(Setting):
 
     def IO_check(self):
         if self.comm_state:
-            self.clamping_tool_state = get_tool_digital_input(1)
-            self.pushing_tool_state = get_tool_digital_input(2)
-            if (self.PTOR_data[0] & self.PTOR_dic['clamp']) or (self.clamping_tool_state):
+            self.clamp_state = get_tool_digital_input(1)    # for future use
+            self.btn_state = get_tool_digital_input(2)     # for future use
+            if (self.PTOR_data[1] & self.PTOR_dic['clamp']) or (self.clamp_state):
                 set_tool_digital_output(1, ON)
-                self.clamp_state = True
                 print("Clamped!")
-                self.RTOP_data[0] = self.RTOP_data[0] | self.RTOP_dic['clamped']
+                self.RTOP_data[1] = self.RTOP_data[1] | self.RTOP_dic['clamped']
             else:
                 set_tool_digital_output(1, OFF)
                 print("Unclamped!")
-                self.clamp_state = False
-                self.RTOP_data[0] = self.RTOP_data[0] & ~self.RTOP_dic['clamped']
+                self.RTOP_data[1] = self.RTOP_data[1] & ~self.RTOP_dic['clamped']
 
-            if (self.PTOR_data[0] & self.PTOR_dic['pushed']) or (self.pushing_tool_state):
+            if (self.PTOR_data[1] & self.PTOR_dic['pushed']) or (self.btn_state):
                 set_tool_digital_output(2, ON)
-                self.btn_state = True
                 print("Pushed!")
-                self.RTOP_data[0] = self.RTOP_data[0] | self.RTOP_dic['pushed']
+                self.RTOP_data[1] = self.RTOP_data[1] | self.RTOP_dic['pushed']
             else:
                 set_tool_digital_output(2, OFF)
-                self.btn_state = False
                 print("Unpushed!")
-                self.RTOP_data[0] = self.RTOP_data[0] & ~self.RTOP_dic['pushed']
+                self.RTOP_data[1] = self.RTOP_data[1] & ~self.RTOP_dic['pushed']
         else:
             print("Communication Unsuccessful!")
 
     def holder_check(self):
         # COMBO
         if self.unclamp_combo == True:
-            self.RTOP_data[0] = self.RTOP_data[0] & ~self.RTOP_dic['unclamp_chademo_holder']
-            self.RTOP_data[0] = self.RTOP_data[0] | self.RTOP_dic['unclamp_combo_holder']
+            self.RTOP_data[1] = self.RTOP_data[1] & ~self.RTOP_dic['unclamp_chademo_holder']
+            self.RTOP_data[1] = self.RTOP_data[1] | self.RTOP_dic['unclamp_combo_holder']
             print("Unclamp Combo Holder!")
         else:
             self.unclamp_combo = False
         # CHAdeMO
         if self.unclamp_chademo == True:
-            self.RTOP_data[0] = self.RTOP_data[0] & ~self.RTOP_dic['unclamp_combo_holder']
-            self.RTOP_data[0] = self.RTOP_data[0] | self.RTOP_dic['unclamp_chademo_holder']
+            self.RTOP_data[1] = self.RTOP_data[1] & ~self.RTOP_dic['unclamp_combo_holder']
+            self.RTOP_data[1] = self.RTOP_data[1] | self.RTOP_dic['unclamp_chademo_holder']
             print("Unclamp CHAdeMO Holder!")
         else:
             self.unclamp_chademo = False
+
+    def test_sensor_check(self):
+        if self.comm_state:
+            if self.PTOR_data[1] & self.PTOR_dic['combo_top_turned_on']:
+                self.combo_test_completed = True
+            else:
+                self.combo_test_completed = False
+            if self.PTOR_data[1] & self.PTOR_dic['combo_bottom_turned_on']:
+                self.combo_test_failed = True
+
 
     def emergency_check(self):
         if self.PTOR_data[0] & self.PTOR_dic['emergency_pushed']:
